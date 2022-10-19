@@ -28,7 +28,7 @@ class Api
 
     protected function setParameters(array $config)
     {
-        if (! is_array($config)) {
+        if (!is_array($config)) {
             throw new \Exception('$config variable must be an array.');
         }
         if (array_key_exists('username', $config)) {
