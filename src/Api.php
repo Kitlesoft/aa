@@ -28,7 +28,7 @@ class Api
 
     protected function setParameters(array $config)
     {
-        if (!is_array($config)) {
+        if (! is_array($config)) {
             throw new \Exception('$config variable must be an array.');
         }
         if (array_key_exists('username', $config)) {
@@ -168,6 +168,7 @@ class Api
                 return $this->shortenString(strip_tags($text));
             } else {
                 $split = explode('.', strip_tags($text));
+
                 return $split[0];
             }
         }
