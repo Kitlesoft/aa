@@ -135,7 +135,7 @@ class Api
                 }
             }
             if ($obj->images != null) {
-                $obj->cover = $obj->images[0]['link'];
+                $obj->cover = $obj->images[0]['id'];
             }
             if (isset($data->xpath('//n:contentMeta/n:located[@type="cptype:city"]/n:name[@xml:lang="tr"]')[0])) {
                 $obj->city = (string)$data->xpath('//n:contentMeta/n:located[@type="cptype:city"]/n:name[@xml:lang="tr"]')[0];
