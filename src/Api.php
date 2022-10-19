@@ -28,7 +28,7 @@ class Api
 
     protected function setParameters(array $config)
     {
-        if (!is_array($config)) {
+        if (! is_array($config)) {
             throw new \Exception('$config variable must be an array.');
         }
         if (array_key_exists('username', $config)) {
@@ -81,6 +81,7 @@ class Api
                 return json_encode($jsonResponse["data"]["result"]);
             }
         }
+
         return false;
     }
 
@@ -91,6 +92,7 @@ class Api
         if ($data) {
             return $data;
         }
+
         return false;
     }
 
@@ -146,8 +148,10 @@ class Api
                 $obj->keywords = $tags;
             }
             $obj->created_at = (new Carbon($data->itemSet->newsItem->itemMeta->versionCreated))->format('Y-m-d H:i:s');
+
             return $obj;
         }
+
         return false;
     }
 
@@ -157,6 +161,7 @@ class Api
             return $this->shortenString(strip_tags($text));
         } else {
             $split = explode('.', strip_tags($text));
+
             return $split[0];
         }
     }
@@ -169,6 +174,7 @@ class Api
             $str .= '...';
             $str = str_replace(',...', '...', $str);
         }
+
         return $str;
     }
 
@@ -181,6 +187,7 @@ class Api
                 array_push($data, $this->toObject($document));
             }
         }
+
         return json_encode($data);
     }
 
@@ -188,6 +195,7 @@ class Api
     {
         $data = $this->document($id, $format);
         file_put_contents($saveLocation, $data);
+
         return $saveLocation;
     }
 
@@ -195,6 +203,7 @@ class Api
     {
         $text = html_entity_decode(preg_replace("/\(AA\)?\s?\W/", "", $text));
         $text = trim(str_replace(["\t", "\n", "\r", "\0", "\x0B"], " ", $text), " \x2D");
+
         return $text;
     }
 }
