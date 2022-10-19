@@ -28,7 +28,7 @@ class Api
 
     protected function setParameters(array $config)
     {
-        if (! is_array($config)) {
+        if (!is_array($config)) {
             throw new \Exception('$config variable must be an array.');
         }
         if (array_key_exists('username', $config)) {
@@ -110,7 +110,11 @@ class Api
             $obj->code = (string)$data->itemSet->newsItem['guid'];
             $obj->category = (string)$data->xpath('//n:subject/n:name[@xml:lang="tr"]')[0];
             $obj->title = (string)$data->itemSet->newsItem->contentMeta->headline;
-            $obj->body = $this->clearText($data->itemSet->newsItem->contentSet->inlineXML->nitf->body->{'body.content'});
+            if (empty($this->clearText($data->itemSet->newsItem->contentSet->inlineXML->nitf->body->{'body.content'}))) {
+                $obj->body = null;
+            } else {
+                $obj->body = $this->clearText($data->itemSet->newsItem->contentSet->inlineXML->nitf->body->{'body.content'});
+            }
             $obj->summary = $this->clearText($data->itemSet->newsItem->contentSet->inlineXML->nitf->body->{'body.head'}->abstract) ?: $this->createSummary($obj->body, $this->summaryDot);
             $medias = $data->xpath('//n:newsItem/n:itemMeta/n:link');
             $obj->images = null;
@@ -157,12 +161,15 @@ class Api
 
     protected function createSummary($text, $dot = false)
     {
-        if ($dot) {
-            return $this->shortenString(strip_tags($text));
+        if (empty($text)) {
+            return null;
         } else {
-            $split = explode('.', strip_tags($text));
-
-            return $split[0];
+            if ($dot) {
+                return $this->shortenString(strip_tags($text));
+            } else {
+                $split = explode('.', strip_tags($text));
+                return $split[0];
+            }
         }
     }
 
