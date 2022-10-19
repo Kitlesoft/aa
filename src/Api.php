@@ -28,7 +28,7 @@ class Api
 
     protected function setParameters(array $config)
     {
-        if (! is_array($config)) {
+        if (!is_array($config)) {
             throw new \Exception('$config variable must be an array.');
         }
         if (array_key_exists('username', $config)) {
@@ -81,7 +81,6 @@ class Api
                 return json_encode($jsonResponse["data"]["result"]);
             }
         }
-
         return false;
     }
 
@@ -92,7 +91,6 @@ class Api
         if ($data) {
             return $data;
         }
-
         return false;
     }
 
@@ -110,8 +108,8 @@ class Api
             $obj->code = (string)$data->itemSet->newsItem['guid'];
             $obj->category = (string)$data->xpath('//n:subject/n:name[@xml:lang="tr"]')[0];
             $obj->title = (string)$data->itemSet->newsItem->contentMeta->headline;
-            $obj->body = html_entity_decode(preg_replace("/\(AA\)?\s?\W/", "", $data->itemSet->newsItem->contentSet->inlineXML->nitf->body->{'body.content'}));
-            $obj->summary = trim(str_replace(["\t", "\n", "\r", "\0", "\x0B"], " ", $data->itemSet->newsItem->contentSet->inlineXML->nitf->body->{'body.head'}->abstract), " \x2D") ?: $this->createSummary($obj->body, $this->summaryDot);
+            $obj->body = $this->clearText($data->itemSet->newsItem->contentSet->inlineXML->nitf->body->{'body.content'});
+            $obj->summary = $this->clearText($data->itemSet->newsItem->contentSet->inlineXML->nitf->body->{'body.head'}->abstract) ?: $this->createSummary($obj->body, $this->summaryDot);
             $medias = $data->xpath('//n:newsItem/n:itemMeta/n:link');
             $obj->images = null;
             $obj->videos = null;
@@ -148,10 +146,8 @@ class Api
                 $obj->keywords = $tags;
             }
             $obj->created_at = (new Carbon($data->itemSet->newsItem->itemMeta->versionCreated))->format('Y-m-d H:i:s');
-
             return $obj;
         }
-
         return false;
     }
 
@@ -161,8 +157,7 @@ class Api
             return $this->shortenString(strip_tags($text));
         } else {
             $split = explode('.', strip_tags($text));
-
-            return $split[0] . '.';
+            return $split[0];
         }
     }
 
@@ -174,7 +169,6 @@ class Api
             $str .= '...';
             $str = str_replace(',...', '...', $str);
         }
-
         return $str;
     }
 
@@ -187,7 +181,6 @@ class Api
                 array_push($data, $this->toObject($document));
             }
         }
-
         return json_encode($data);
     }
 
@@ -195,7 +188,13 @@ class Api
     {
         $data = $this->document($id, $format);
         file_put_contents($saveLocation, $data);
-
         return $saveLocation;
+    }
+
+    protected function clearText($text)
+    {
+        $text = html_entity_decode(preg_replace("/\(AA\)?\s?\W/", "", $text));
+        $text = trim(str_replace(["\t", "\n", "\r", "\0", "\x0B"], " ", $text), " \x2D");
+        return $text;
     }
 }
