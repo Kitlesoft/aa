@@ -185,6 +185,7 @@ class Api
             $document = $this->document($item->id, 'newsml29');
             if ($document) {
                 array_push($data, $this->toObject($document));
+                usleep(0.5 * 1000000);
             }
         }
 
